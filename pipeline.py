@@ -1,6 +1,4 @@
-import csv
 from collections import deque
-import itertools
 
 
 class DAG:
@@ -51,11 +49,11 @@ class Pipeline:
         self.tasks = DAG()
 
     def task(self, depends_on=None):
-        def inner(f):
-            self.tasks.add(f)
+        def inner(func):
+            self.tasks.add(func)
             if depends_on:
-                self.tasks.add(depends_on, f)
-            return f
+                self.tasks.add(depends_on, func)
+            return func
         return inner
 
     def run(self):
@@ -69,12 +67,3 @@ class Pipeline:
             if task not in completed:
                 completed[task] = task()
         return completed
-
-
-def build_csv(lines, header=None, file=None):
-    if header:
-        lines = itertools.chain([header], lines)
-    writer = csv.writer(file, delimiter=',')
-    writer.writerows(lines)
-    file.seek(0)
-    return file
